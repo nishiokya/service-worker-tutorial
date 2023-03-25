@@ -1,13 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service Worker Tutorial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>図書館の蔵書検索</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Welcome to the Service Worker Tutorial!</h1>
-
-  <script src="main.js"></script>
+    <header>
+        <h1 id="main-title" tabindex="0">図書館の蔵書検索</h1>
+    </header>
+    <main>
+        <section>
+            <h2 id="search-title" tabindex="0">検索</h2>
+            <form id="search-form" role="search">
+                <label for="search-input" tabindex="0">キーワードで検索:</label>
+                <input type="text" id="search-input" aria-labelledby="search-title" placeholder="著者、タイトル、ISBNなど" autocomplete="off">
+                <button type="submit" id="search-submit" tabindex="0">検索</button>
+            </form>
+            <div id="query-suggest" class="suggest-container" aria-live="polite"></div>
+        </section>
+        <section>
+            <h2 id="results-title" tabindex="0">検索結果</h2>
+            <div id="results" role="region" aria-labelledby="results-title" tabindex="0"></div>
+        </section>
+    </main>
+    <script src="main.js"></script>
 </body>
 </html>

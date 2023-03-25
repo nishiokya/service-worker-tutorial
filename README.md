@@ -1,100 +1,50 @@
-# service worker titproa;
-JavaScriptを使用したService Workerの基本的なチュートリアルを以下に示します。このチュートリアルでは、Service Workerを登録し、キャッシュ機能を実装する方法を説明します。
+## クエリサジェストシステムを事例としたService Workerチュートリアル
+このチュートリアルでは、Service Workerを使用して検索履歴をローカルデータに保存し、クエリサジェストとして表示する方法を学びます。このプロジェクトは、ユーザーが検索した過去のクエリを表示して、同様の検索を簡単に再度実行できるようにすることを目的としています。
 
-## 手順1: HTMLファイルの作成
+## クエリサジェストシステムとは？
 
-index.htmlという名前で新しいHTMLファイルを作成し、以下の内容を入力します。
-
-```html
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service Worker Tutorial</title>
-</head>
-<body>
-  <h1>Welcome to the Service Worker Tutorial!</h1>
-
-  <script src="main.js"></script>
-</body>
-</html>
-```
-
-## 手順2: JavaScriptファイルの作成
-
-main.jsという名前で新しいJavaScriptファイルを作成し、以下の内容を入力します。
-
-```javascript
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-      console.log('Service Worker registered with scope:', registration.scope);
-    }, function(err) {
-      console.error('Service Worker registration failed:', err);
-    });
-  });
-}
-```
-## 手順3: Service Workerファイルの作成
-
-service-worker.jsという名前で新しいJavaScriptファイルを作成し、以下の内容を入力します。
+クエリサジェストシステムとは、ユーザーが入力した検索クエリを元に、可能性の高いキーワードをリアルタイムで推薦するシステムです。
 
 
-```javascript
 
-const CACHE_NAME = 'my-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/main.js',
-];
+## Service Workerを利用したクエリサジェスト
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      console.log('Opened cache');
-      return cache.addAll(urlsToCache);
-    })
-  );
-});
-
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      if (response) {
-        return response;
-      }
-      return fetch(event.request);
-    })
-  );
-});
-```
-## 手順4: ローカルウェブサーバーの起動
-
-PythonまたはNode.jsを使用して、ローカルのウェブサーバーを起動します。
-
-Pythonの場合:
-
-```
-python -m http.server
-```
-Node.jsの場合:
-
-```
-http-server
-```
-## 手順5: ブラウザで確認
-
-ブラウザでhttp://localhost:8000（Pythonの場合）またはhttp://localhost:8080（Node.jsの場合）にアクセスして、Service Workerが正しく登録されていることを確認します。開発者ツールのコンソールに、Service Workerの登録に関するメッセージが表示されるはずです。
-
-このチュートリアルでは、Service Workerを使用してキャッシュ機能を実装しました。これにより、オフライン時にもアプリケーションが利用できるようになります。ただし、Service Workerはより高度な機能も提供してしており、このチュートリアルでは触れられなかった多くの機能があります。以下は、Service Workerを利用して実装できる機能の一部です。
-
-バックグラウンド同期: オフライン状態で行われた操作を一時的に保存し、ネットワークが利用可能になったときにサーバーと同期します。
-プッシュ通知: ユーザーがアプリケーションを開いていない場合でも、プッシュ通知を受信して表示できます。
-パフォーマンスの最適化: 一部のリソースを事前にキャッシュすることで、アプリケーションの読み込み速度を向上させることができます。
-Service Workerを使用してこれらの高度な機能を実装する方法を学ぶには、公式のService Worker API ドキュメントを参照してください。また、Service Workerを実際に使用している実例を調べることで、さらに理解を深めることができます。
+Service Workerは、ネットワークの中間にプロキシ的に割り込み、リソースのキャッシュやオフライン対応などを実現する技術です。このチュートリアルでは、Service Workerを利用して検索履歴をローカルデータに保存し、クエリサジェストとして表示する方法を紹介します。
 
 
+# 概要
+このチュートリアルでは、以下の手順に従ってプロジェクトを構築します。
+
+1. HTML, CSS, JavaScriptの基本構造を設定する
+1. Service Workerを登録する
+1. 検索履歴をIndexedDBに保存する
+1. クエリサジェストを表示するためのUIを構築する
+1. クエリサジェストの表示を制御するロジックを実装する
+
+# 手順
+## 1. HTML, CSS, JavaScriptの基本構造を設定する
+まず、HTMLファイルで検索フォームとクエリサジェストを表示するための要素を作成します。CSSファイルで見た目を整え、JavaScriptファイルでService Workerを登録し、検索履歴とクエリサジェストのロジックを実装します。
+
+## 2. Service Workerを登録する
+次に、Service Workerを登録します。JavaScriptファイルで navigator.serviceWorker.register() を使用して、Service Workerファイルを登録します。登録が成功すると、Service Workerがインストールされ、アクティブになります。
+
+## 3. 検索履歴をIndexedDBに保存する
+Service Workerを使用して検索履歴をIndexedDBに保存します。検索フォームから送信されたデータを取得し、IndexedDBに保存するロジックを実装します。IndexedDBは、ブラウザに保存されるデータベースで、検索履歴を効率的に保存・取得できます。
+
+## 4. クエリサジェストを表示するためのUIを構築する
+クエリサジェストを表示するためのUIを作成します。検索フォームの下にサジェストされたクエリのリストを表示する領域を設定し、CSSで見た目を整えます。
+
+## 5.クエリサジェストの表示を制御するロジックを実装する
+
+最後に、クエリサジェストを表示するためのロジックを実装します。検索フォームに入力があるたびに、IndexedDBから関連する検索履歴を取得し、クエリサジェストとして表示します。ユーザーがサジェストされたクエリを選択すると、検索フォームに選択されたクエリが入力され、検索が実行されるようにします。
+
+#おわりに
+
+これで、Service Workerを利用したクエリサジェストシステムのチュートリアルが完了しました。検索履歴をローカルデータに保存し、クエリサジェストとして表示する機能を実装することができました。このプロジェクトは、検索エンジンやWebアプリケーションなどでのユーザーエクスペリエンスを向上させるために利用できます。さらに改善や拡張が可能で、例えば、クエリサジェストの候補を絞り込むためのフィルタリング機能などを追加することができます。
+
+以下の条件でindex.html　を生成してください
+- 図書館の蔵書検索のUI
+- ARIAをサポートする
+- js と cssは indexhtmlと同じ階層に配置します
+- レスポンシブデザイン
+- チュートリアルの説明がある
