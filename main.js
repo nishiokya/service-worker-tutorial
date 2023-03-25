@@ -1,34 +1,50 @@
-const indexedDBButton = document.getElementById('indexeddb-button');
+document.addEventListener('DOMContentLoaded', () => {
+  const searchForm = document.getElementById('search-form');
+  const searchInput = document.getElementById('search-input');
+  const results = document.getElementById('results');
 
-indexedDBButton.addEventListener('click', function(event) {
-  const data = document.getElementById('input').value;
+  searchForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = searchInput.value.trim();
+      if (!query) return;
 
-  const request = indexedDB.open('my-db', 1);
+      // 検索処理をここで実行（例: APIから検索結果を取得する）
+      const searchResults = await performSearch(query);
 
-  request.onsuccess = function(event) {
-    const db = event.target.result;
+      // 検索結果を表示
+      displaySearchResults(searchResults);
+  });
 
-    const transaction = db.transaction(['my-store'], 'readwrite');
+  async function performSearch(query) {
+      // この関数では、検索処理を実装します。
+      // 例えば、外部APIを利用して検索結果を取得する場合、以下のようになります。
+      // const response = await fetch(`https://api.example.com/search?query=${encodeURIComponent(query)}`);
+      // const data = await response.json();
+      // return data.results;
+      
+      // ここでは、デモ用にダミーの検索結果を返すようにしています。
+      return [
+          { title: 'タイトル1', author: '著者1' },
+          { title: 'タイトル2', author: '著者2' },
+          { title: 'タイトル3', author: '著者3' }
+      ];
+  }
 
-    const store = transaction.objectStore('my-store');
+  function displaySearchResults(searchResults) {
+      results.innerHTML = '';
 
-    const dataObject = {
-      id: Date.now(),
-      data: data
-    };
+      if (searchResults.length === 0) {
+          results.innerHTML = '<p>検索結果が見つかりませんでした。</p>';
+          return;
+      }
 
-    const request = store.add(dataObject);
+      const ul = document.createElement('ul');
+      results.appendChild(ul);
 
-    request.onsuccess = function(event) {
-      console.log('Data added to IndexedDB:', dataObject);
-    };
-
-    request.onerror = function(event) {
-      console.error('Error adding data to IndexedDB:', event.target.error);
-    };
-  };
-
-  request.onerror = function(event) {
-    console.error('Error opening IndexedDB:', event.target.error);
-  };
+      searchResults.forEach(result => {
+          const li = document.createElement('li');
+          li.textContent = `${result.title} - ${result.author}`;
+          ul.appendChild(li);
+      });
+  }
 });
